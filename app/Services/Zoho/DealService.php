@@ -14,13 +14,15 @@ readonly class DealService
 
     private string $token;
 
-    public function __construct(private Client $client, private TokenService $tokenService) {
-        $this->apiUrl = config('services.zoho.url') . '/' . self::MODULE_NAME;
+    public function __construct(private Client $client, private TokenService $tokenService)
+    {
+        $this->apiUrl = sprintf('%s/%s', config('services.zoho.api_url'), self::MODULE_NAME);
         $this->token = $this->tokenService->getAccessToken();
     }
 
-    public function create(array $data, int $accountId) {
-        $this->client->post($this->apiUrl, [
+    public function create(array $data, int $accountId): array
+    {
+        $response = $this->client->post($this->apiUrl, [
             'headers' => [
                 'Authorization' => 'Zoho-oauthtoken ' . $this->token,
                 'Content-Type' => 'application/json',
@@ -32,5 +34,9 @@ readonly class DealService
                 'Account_Name' => ['id' => $accountId],
             ]]],
         ]);
+
+        $responseArray = json_decode($response->getBody()->getContents(), true);
+
+        return data_get($responseArray, 'data.0');
     }
 }

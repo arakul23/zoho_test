@@ -14,14 +14,15 @@ readonly class AccountService
 
     private string $token;
 
-    public function __construct(private Client $client, private TokenService $tokenService) {
-        $this->apiUrl = config('services.zoho.url') . '/' . self::MODULE_NAME;
+    public function __construct(private Client $client, private TokenService $tokenService)
+    {
+        $this->apiUrl = sprintf('%s/%s', config('services.zoho.api_url'), self::MODULE_NAME);
         $this->token = $this->tokenService->getAccessToken();
     }
 
-    public function create(array $data)
+    public function create(array $data): array
     {
-        $this->client->post($this->apiUrl, [
+        $response = $this->client->post($this->apiUrl, [
             'headers' => [
                 'Authorization' => 'Zoho-oauthtoken ' . $this->token,
                 'Content-Type' => 'application/json',
@@ -32,5 +33,9 @@ readonly class AccountService
                 'Phone' => $data['phone'],
             ]]],
         ]);
+
+        $responseArray = json_decode($response->getBody()->getContents(), true);
+
+        return data_get($responseArray, 'data.0');
     }
 }

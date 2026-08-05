@@ -11,9 +11,14 @@ readonly class DealCreationService
         private AccountService $accountService,
     ) {
     }
-    public function createDeal(array $data)
+
+    public function createDeal(array $data): array
     {
         $account = $this->accountService->create(data_get($data, 'account'));
-        $deal = $this->dealService->create(data_get($data, 'deal'), $account->id);
+        $accountId = (int)data_get($account, 'details.id');
+
+        $deal = $this->dealService->create(data_get($data, 'deal'), $accountId);
+
+        return ['account_id' => $accountId, 'deal_id' => data_get($deal, 'details.id')];
     }
 }

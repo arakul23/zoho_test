@@ -183,8 +183,8 @@ const submitError = ref('');
 
 const account = reactive({
     name: '',
-    website: 'https://google.com',
-    phone:  '+380679208355',
+    website: '',
+    phone:  '',
 });
 
 const deal = reactive({

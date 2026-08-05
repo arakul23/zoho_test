@@ -14,6 +14,8 @@ class DealsController extends Controller
     ) {}
 
     public function create(CreateRequest $request) {
-        $deal = $this->dealCreationService->createDeal($request->validated());
+        $result = $this->dealCreationService->createDeal($request->validated());
+
+        return response()->json($result);
     }
 }

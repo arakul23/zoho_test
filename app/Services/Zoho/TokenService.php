@@ -27,10 +27,9 @@ class TokenService
 
     public function refreshAccessToken(): string
     {
-        $refreshToken = Redis::connection('zoho')->get($this->refreshTokenKey)
-            ?? config('services.zoho.refresh_token');
+        $refreshToken = Redis::connection('zoho')->get($this->refreshTokenKey);
 
-        $response = Http::asForm()->post('https://accounts.zoho.com/oauth/v2/token', [
+        $response = Http::asForm()->post(config('services.zoho.refresh_token_url'), [
             'refresh_token' => $refreshToken,
             'client_id' => config('services.zoho.client_id'),
             'client_secret' => config('services.zoho.client_secret'),
@@ -38,7 +37,7 @@ class TokenService
         ]);
 
         $data = $response->json();
-dd($data);
+
         if (! $response->ok() || empty($data['access_token'])) {
             throw new RuntimeException('Failed to refresh Zoho access token: '.($data['error'] ?? 'unknown error'));
         }

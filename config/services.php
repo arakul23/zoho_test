@@ -39,7 +39,7 @@ return [
         'client_id' => env('ZOHO_CLIENT_ID'),
         'client_secret' => env('ZOHO_CLIENT_SECRET'),
         'api_url' => env('ZOHO_API_URL', 'https://api.zoho.com'),
-        'refresh_token_url' => env('ZOHO_REFRESH_TOKEN', ''),
+        'refresh_token_url' => env('ZOHO_REFRESH_TOKEN_URL'),
     ],
 
 ];
