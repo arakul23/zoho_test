@@ -15,15 +15,11 @@ class InitCommand extends Command
 
     public function handle(): int
     {
-        $code = $this->argument('code');
-        var_dump($code);
-        $accountsUrl = config('services.zoho.accounts_url', 'https://accounts.zoho.eu');
-
         $response = Http::asForm()->post(config('services.zoho.refresh_token_url'), [
             'grant_type' => 'authorization_code',
             'client_id' => config('services.zoho.client_id'),
             'client_secret' => config('services.zoho.client_secret'),
-            'code' => $code,
+            'code' => $this->argument('code'),
         ]);
 
         $data = $response->json();
@@ -34,10 +30,8 @@ class InitCommand extends Command
             return Command::FAILURE;
         }
 
-        // Сохраняем refresh_token в Redis бессрочно
         Redis::connection('zoho')->set('zoho:refresh_token', $data['refresh_token']);
 
-        // Сразу сохраняем access_token
         $ttl = max(($data['expires_in'] ?? 3600) - 300, 60);
         Redis::connection('zoho')->setex('zoho:access_token', $ttl, $data['access_token']);
 

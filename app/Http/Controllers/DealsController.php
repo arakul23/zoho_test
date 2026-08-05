@@ -13,7 +13,8 @@ class DealsController extends Controller
         private readonly DealCreationService $dealCreationService
     ) {}
 
-    public function create(CreateRequest $request) {
+    public function create(CreateRequest $request)
+    {
         $result = $this->dealCreationService->createDeal($request->validated());
 
         return response()->json($result);

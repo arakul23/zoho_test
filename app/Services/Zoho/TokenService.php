@@ -10,15 +10,13 @@ use RuntimeException;
 
 class TokenService
 {
-    private const string MODULE_NAME = 'token';
-
-    protected string $cacheKey = 'zoho:access_token';
+    protected string $accessTokenKey = 'zoho:access_token';
 
     protected string $refreshTokenKey = 'zoho:refresh_token';
 
     public function getAccessToken(): string
     {
-        if ($token = Redis::connection('zoho')->get($this->cacheKey)) {
+        if ($token = Redis::connection('zoho')->get($this->accessTokenKey)) {
             return $token;
         }
 
@@ -44,7 +42,7 @@ class TokenService
 
         $ttl = ($data['expires_in'] ?? 3600) - 60;
 
-        Redis::connection('zoho')->setex($this->cacheKey, $ttl, $data['access_token']);
+        Redis::connection('zoho')->setex($this->accessTokenKey, $ttl, $data['access_token']);
 
         return $data['access_token'];
     }

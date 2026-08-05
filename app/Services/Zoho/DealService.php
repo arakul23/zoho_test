@@ -24,7 +24,7 @@ readonly class DealService
     {
         $response = $this->client->post($this->apiUrl, [
             'headers' => [
-                'Authorization' => 'Zoho-oauthtoken ' . $this->token,
+                'Authorization' => 'Zoho-oauthtoken '.$this->token,
                 'Content-Type' => 'application/json',
             ],
             'json' => ['data' => [[
