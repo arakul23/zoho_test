@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
     php:
         container_name: zoho_php-fpm
@@ -14,6 +16,39 @@ services:
                 condition: service_healthy
         restart: unless-stopped
         user: "1000:1000"
+        healthcheck:
+            test: ["CMD", "php-fpm", "-t"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 15s
+        command: >
+            sh -c "
+            php artisan wayfinder:generate --with-form &&
+            php-fpm
+            "
+
+    node:
+        build:
+            context: .
+            dockerfile: docker/node/Dockerfile
+        container_name: zoho_node
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+            - /var/www/html/node_modules
+        ports:
+            - "5173:5173"
+        tty: true
+        user: "root"
+        environment:
+            - NODE_ENV=development
+            - CHOKIDAR_USEPOLLING=true
+        depends_on:
+            php:
+                condition: service_healthy
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+        restart: unless-stopped
 
     nginx:
         image: nginx:1.25
@@ -54,18 +89,12 @@ services:
             --appendonly yes
         volumes:
             - redis_data:/data
-        healthcheck:
-            test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-secret}", "ping" ]
-            interval: 10s
-            timeout: 5s
-            retries: 5
 
 volumes:
     mysql_data:
     redis_data:
-        driver: local
+    node_modules:  # ← ДОБАВЬ ЭТО
 
 networks:
     app-network:
         driver: bridge
-
