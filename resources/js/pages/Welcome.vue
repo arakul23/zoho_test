@@ -30,7 +30,6 @@
         </div>
 
         <form @submit.prevent="handleSubmit" novalidate>
-            <!-- ACCOUNT TAB -->
             <section
                 v-show="activeTab === 'account'"
                 class="zoho-form__section"
@@ -84,7 +83,6 @@
                 </div>
             </section>
 
-            <!-- DEAL TAB -->
             <section v-show="activeTab === 'deal'" class="zoho-form__section">
                 <div class="zoho-form__field">
                     <label for="deal_name">Deal name *</label>
@@ -257,7 +255,6 @@ async function handleSubmit() {
     submitError.value = '';
 
     if (!validateAll()) {
-        // jump to the tab that has the first error
         if (
             errors.account_name ||
             errors.account_website ||
